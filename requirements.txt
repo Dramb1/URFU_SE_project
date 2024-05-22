@@ -1,0 +1,6 @@
+pillow
+dlib
+cv2
+numpy
+fastapi
+scikit-learn
