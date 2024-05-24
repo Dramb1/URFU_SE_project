@@ -13,20 +13,41 @@ from sklearn.metrics.pairwise import cosine_similarity
 app = FastAPI()
 
 detector = dlib.get_frontal_face_detector()
-sp = dlib.shape_predictor('./pretrained/shape_predictor_68_face_landmarks.dat')
-facerec = dlib.face_recognition_model_v1('./pretrained/dlib_face_recognition_resnet_model_v1.dat')
+landmarks_predictor = dlib.shape_predictor(
+    "./pretrained/shape_predictor_68_face_landmarks.dat"
+)
+facerec = dlib.face_recognition_model_v1(
+    "./pretrained/dlib_face_recognition_resnet_model_v1.dat"
+)
 
 
-def get_face_embedding(image, detector, sp, facerec):
+def get_face_embedding(image, detector, landmarks_predictor, facerec):
+    """Obtaining the embedding of a person's face in an image
+
+    Args:
+        image numpy.ndarray: _description_
+        detector (_dlib_pybind11.fhog_object_detector): face detector
+        landmarks_predictor (_dlib_pybind11.shape_predictor): face landmarks predictor
+        facerec (_dlib_pybind11.face_recognition_model_v1): face recognition model
+
+    Returns:
+        numpy.ndarray: face embedding
+    """
     dets = detector(image, 1)
-    d = dets[0]
-    shape = sp(image, d)
+    detection = dets[0]
+    shape = landmarks_predictor(image, detection)
     face_descriptor = facerec.compute_face_descriptor(image, shape)
     return np.array(face_descriptor)
 
 
 @app.get("/")
 async def home_page():
+    """Домашняя страница для загрузки сравнения изображений
+
+    Returns:
+        HTMLResponse: html page layout
+    """
+
     html_content = """
           <form method="post" enctype="multipart/form-data">
           <div>
@@ -42,12 +63,24 @@ async def home_page():
 
 
 @app.post("/")
-async def processing_request(file: UploadFile = File(...), file1: UploadFile = File(...)):
+async def processing_request(
+    file: UploadFile = File(...), file1: UploadFile = File(...)
+):
+    """Post a query comparing two images of people
+
+    Args:
+        file (UploadFile): Images of a human face
+        file1 (UploadFile): Images of a human face
+
+    Returns:
+        HTMLResponse: html page layout with two images and cosine similarity of people
+    """
+
     image1 = np.asarray(Image.open(BytesIO(await file.read())))
     image2 = np.asarray(Image.open(BytesIO(await file1.read())))
 
-    embedding1 = get_face_embedding(image1, detector, sp, facerec)
-    embedding2 = get_face_embedding(image2, detector, sp, facerec)
+    embedding1 = get_face_embedding(image1, detector, landmarks_predictor, facerec)
+    embedding2 = get_face_embedding(image2, detector, landmarks_predictor, facerec)
 
     cosine_distance = cosine_similarity([embedding1], [embedding2])
 
@@ -55,8 +88,8 @@ async def processing_request(file: UploadFile = File(...), file1: UploadFile = F
     image2 = cv2.cvtColor(image2, cv2.COLOR_BGR2RGB)
     _, image1_buffer = cv2.imencode(".png", image1)
     _, image2_buffer = cv2.imencode(".png", image2)
-    image1_base64 = base64.b64encode(image1_buffer).decode('utf-8')
-    image2_base64 = base64.b64encode(image2_buffer).decode('utf-8')
+    image1_base64 = base64.b64encode(image1_buffer).decode("utf-8")
+    image2_base64 = base64.b64encode(image2_buffer).decode("utf-8")
 
     html_content = f"""
     <!DOCTYPE html>
