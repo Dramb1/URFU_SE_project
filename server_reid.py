@@ -9,6 +9,8 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import HTMLResponse
 from sklearn.metrics.pairwise import cosine_similarity
 
+from utils import get_face_embedding
+
 
 app = FastAPI()
 
@@ -19,25 +21,6 @@ landmarks_predictor = dlib.shape_predictor(
 facerec = dlib.face_recognition_model_v1(
     "./pretrained/dlib_face_recognition_resnet_model_v1.dat"
 )
-
-
-def get_face_embedding(image, detector, landmarks_predictor, facerec):
-    """Obtaining the embedding of a person's face in an image
-
-    Args:
-        image numpy.ndarray: _description_
-        detector (_dlib_pybind11.fhog_object_detector): face detector
-        landmarks_predictor (_dlib_pybind11.shape_predictor): face landmarks predictor
-        facerec (_dlib_pybind11.face_recognition_model_v1): face recognition model
-
-    Returns:
-        numpy.ndarray: face embedding
-    """
-    dets = detector(image, 1)
-    detection = dets[0]
-    shape = landmarks_predictor(image, detection)
-    face_descriptor = facerec.compute_face_descriptor(image, shape)
-    return np.array(face_descriptor)
 
 
 @app.get("/")
