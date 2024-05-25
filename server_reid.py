@@ -25,7 +25,7 @@ facerec = dlib.face_recognition_model_v1(
 
 @app.get("/")
 async def home_page():
-    """Домашняя страница для загрузки сравнения изображений
+    """Home page for uploading image comparisons
 
     Returns:
         HTMLResponse: html page layout
