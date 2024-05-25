@@ -46,7 +46,7 @@ def process_images_in_folder(database_path: str, mean_embs: bool):
                 )
                 embs.append(embedding)
 
-        with open(os.path.join(embs_person_folder_path, f"mean_emb.npy"), "wb") as f:
+        with open(os.path.join(embs_person_folder_path, "mean_emb.npy"), "wb") as f:
             if mean_embs:
                 np.save(f, np.array(embs))
             else:
