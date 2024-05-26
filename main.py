@@ -101,10 +101,9 @@ async def processing_reid_request(file: UploadFile = File(...)):
             <title>HTML Content</title>
         </head>
         <body>
-            <h1>Изображения для сравнения</h1>
+            <h1>Изображение для повторной идентификации</h1>
             <img src="data:image/jpeg;base64,{image_base64}" alt="Image 1" width="300">
             <p>{f'person ID: {persons_id[max_same_person_id]}' if cosine_distance[0, max_same_person_id] > 0.945 else 'person ID: Unknown'}</p>
-            <p>cosine_distance: {cosine_distance[0, max_same_person_id]}</p>
         </body>
 
         <form method="get" action="/" enctype="multipart/form-data">
