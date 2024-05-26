@@ -2,7 +2,7 @@ name: flake8
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "pytest" ]
   pull_request:
     branches: [ "main" ]
 
