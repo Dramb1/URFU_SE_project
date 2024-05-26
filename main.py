@@ -37,8 +37,7 @@ async def home_page():
     html_content = """
         <form method="get" action="/reidentification" enctype="multipart/form-data">
             <button type="submit">Reid person</button>
-        </form>
-          
+        </form> 
         <form method="get" action="/add_person" enctype="multipart/form-data">
             <button type="submit">Add new person</button>
         </form>
@@ -103,7 +102,8 @@ async def processing_reid_request(file: UploadFile = File(...)):
         <body>
             <h1>Изображение для повторной идентификации</h1>
             <img src="data:image/jpeg;base64,{image_base64}" alt="Image 1" width="300">
-            <p>{f'person ID: {persons_id[max_same_person_id]}' if cosine_distance[0, max_same_person_id] > 0.945 else 'person ID: Unknown'}</p>
+            <p>{f'person ID: {persons_id[max_same_person_id]}' 
+                if cosine_distance[0, max_same_person_id] > 0.945 else 'person ID: Unknown'}</p>
         </body>
 
         <form method="get" action="/" enctype="multipart/form-data">

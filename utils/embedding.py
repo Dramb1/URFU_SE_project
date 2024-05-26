@@ -43,5 +43,4 @@ def get_embs_db():
             emb = np.load(f)
             persons_emb = np.vstack((persons_emb, emb))
             persons_id.append(person_folder)
-    
     return persons_emb, persons_id
