@@ -1,4 +1,4 @@
-apt-get install lbzip2
+sudo apt-get install lbzip2
 
 mkdir pretrained
 cd pretrained
